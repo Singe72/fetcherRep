@@ -5,6 +5,35 @@ export async function GET(request: NextRequest) {
     let data = null;
     let cursor = "";
     let iteration = 0;
+    let onlyFirst = false;
+
+    let sync = await prisma.synchronisation.findFirst({});
+
+    if(!sync){
+        sync = await prisma.synchronisation.create({data: {
+            is_synchronising: true
+        }});
+    } else {
+        if(sync.is_synchronising){
+            let error_response = {
+                status: "error",
+                message: "Synchronisation is already in progress...",
+            };
+            return new NextResponse(JSON.stringify(error_response), {
+                status: 500,
+                headers: { "Content-Type": "application/json" },
+            });
+        }
+        onlyFirst = true;
+        await prisma.synchronisation.update({
+            data: {
+                is_synchronising: true
+            },
+            where: {
+                synchrosation_id: sync.synchrosation_id
+            }
+        });
+    }
 
     do {
         const res = await fetch('https://hackerone.com/graphql', {
@@ -63,7 +92,42 @@ export async function GET(request: NextRequest) {
 
         cursor = data.data.hacktivity_items.pageInfo.endCursor;
         iteration++;
-    } while(data.data["hacktivity_items"]["pageInfo"]["hasNextPage"]);
+    } while(data.data["hacktivity_items"]["pageInfo"]["hasNextPage"] && !onlyFirst);
 
-    return NextResponse.json({"nombre de pages" : (iteration-1)});
+    await prisma.synchronisation.update({
+        data: {
+            is_synchronising: false
+        },
+        where: {
+            synchrosation_id: sync.synchrosation_id
+        }
+    });
+
+    let users = await prisma.user.findMany({});
+
+    const notification = await prisma.notification.create({
+        data: {
+            notification_message: "A synchronisation has been performed",
+            notification_name: "New synchronisation",
+        }
+    });
+
+    users.map(async (user) => {
+        await prisma.user_Notification.create({
+            data: {
+                user_notification_notification_id: notification.notification_id,
+                user_notification_user_id: user.user_id
+            }
+        });
+    })
+
+    let error_response = {
+        status: "success",
+        message: "the synchronization has been carried out correctly",
+    };
+
+    return new NextResponse(JSON.stringify(error_response), {
+        status: 201,
+        headers: { "Content-Type": "application/json" },
+    });
 }

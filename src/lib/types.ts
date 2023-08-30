@@ -45,6 +45,10 @@ export interface ReportUpdateResponse {
     report?: IReport;
 }
 
+export interface SynchronisationResponse {
+    is_synchronising: boolean;
+}
+
 export interface IReport {
     report_id: number;
     report_title: string;

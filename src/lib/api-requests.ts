@@ -2,7 +2,7 @@ import {
     FilteredUser,
     IReport,
     ReportsFetchResponse,
-    ReportUpdateRequest, ReportUpdateResponse,
+    ReportUpdateRequest, ReportUpdateResponse, SynchronisationResponse,
     UserLoginResponse,
     UserResponse
 } from "./types";
@@ -107,7 +107,7 @@ export async function apiFetchReports(): Promise<IReport[]> {
     return handleResponse<ReportsFetchResponse>(response).then((data) => data.reports);
 }
 
-export async function apiUpdateReport(report: ReportUpdateRequest): Promise<any> {
+export async function apiUpdateReport(report: ReportUpdateRequest): Promise<ReportUpdateResponse> {
     const response = await fetch(
         `${SERVER_ENDPOINT}/api/reports/${report.report.report_id}`,
         {
@@ -121,4 +121,19 @@ export async function apiUpdateReport(report: ReportUpdateRequest): Promise<any>
     );
 
     return handleResponse<ReportUpdateResponse>(response).then((data) => data);
+}
+
+export async function apiIsSynchronising(): Promise<SynchronisationResponse> {
+    const response = await fetch(
+        `${SERVER_ENDPOINT}/api/synchronisation`,
+        {
+            method: 'GET',
+            credentials: "include",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+    );
+
+    return handleResponse<SynchronisationResponse>(response).then((data) => data);
 }
