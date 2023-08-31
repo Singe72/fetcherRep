@@ -19,7 +19,7 @@ import CheckboxInput from "@/components/CheckboxInput";
 import TextareaInput from "@/components/TextareaInput";
 import ReactSelectInput from "@/components/ReactSelectInput";
 
-const ReportPage = ({params}: {params: {report_id: string}}) => {
+const ModifyReport = ({report_id}: {report_id: string|undefined}) => {
 	const store = useReportStore();
 	const router = useRouter();
 	const reports = store.reports;
@@ -67,7 +67,7 @@ const ReportPage = ({params}: {params: {report_id: string}}) => {
 			})
 			setVulnerabilityOptions(actualVulnerabilityOptions);
 
-			const report = reports.find((value) => params.report_id)!;
+			const report = reports.find((value) => report_id)!;
 
 			const actualVulnerabilityValues: {value: string, label: string}[] = [];
 			report?.report_vulnerabilities.map((report_vulnerability) => {
@@ -98,10 +98,14 @@ const ReportPage = ({params}: {params: {report_id: string}}) => {
 		};
 	}, []);
 
+	if(report_id == null){
+		return (<></>);
+	}
+
 	const onSubmit: SubmitHandler<ModifyReportInput> = async (data) => {
 		const report: ReportUpdateRequest = {
 			report: {
-				report_id: params.report_id,
+				report_id: report_id,
 				report_weakness: data.weakness,
 				report_disclosure: disclosure,
 				report_top_report: topReport,
@@ -132,7 +136,6 @@ const ReportPage = ({params}: {params: {report_id: string}}) => {
 
 	return (
 		<>
-			<Toaster />
 			<FormProvider {...methods}>
 				<form autoComplete={"new-password"} onSubmit={handleSubmit(onSubmit)}>
 					<section className="d-flex justify-content-center align-items-start py-5 px-3 px-md-0">
@@ -183,4 +186,4 @@ const ReportPage = ({params}: {params: {report_id: string}}) => {
 	)
 }
 
-export default ReportPage;
+export default ModifyReport;

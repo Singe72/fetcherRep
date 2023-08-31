@@ -50,7 +50,7 @@ export interface SynchronisationResponse {
 }
 
 export interface IReport {
-    report_id: number;
+    report_id: string;
     report_title: string;
     report_h1_id: number|null;
     report_program: string|null;

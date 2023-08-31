@@ -3,6 +3,7 @@ import Synchronisation from "@/components/Synchronisation";
 import ReportList from "@/components/ReportList";
 
 import Script from "next/script";
+import ModifyReport from "@/components/ModifyReport";
 
 export default async function Home() {
   function numberWithSpaces(x: number) {

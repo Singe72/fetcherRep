@@ -1,12 +1,28 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import { apiFetchReports } from "@/lib/api-requests";
 import { useReportStore } from "@/store";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import ModifyReport from "@/components/ModifyReport";
+import Modal from 'react-bootstrap/Modal';
+import ModalDialog from 'react-bootstrap/ModalDialog'
+import {IReport} from "@/lib/types";
 
 const FeedbackList: React.FC = () => {
+	const [show, setShow] = useState(false);
+	const [report, setReport] = useState(null as IReport|null);
+
+	const handleClose = () => {
+		setShow(false);
+		setReport(null);
+	}
+	const handleShow = (report: IReport) => {
+		setShow(true);
+		setReport(report);
+	}
+
 	const store = useReportStore();
 	const reportList = store.reports;
 
@@ -89,15 +105,24 @@ const FeedbackList: React.FC = () => {
 							}
 						</td>
 						<td>
-							<Link className={"btn btn-transparant"} href={`/report/${report.report_id}`}>
+							<button onClick={() => handleShow(report)} className={"btn btn-transparant"} >
 								<span className="material-symbols-outlined">
 									edit
 								</span>
-							</Link>
+							</button>
 						</td>
 					</tr>
 				</>
 			))}
+
+			<Modal show={show} onHide={() => handleClose()} dialogClassName="modal-70w">
+				<Modal.Header closeButton className={"bg-dark text-white"} closeVariant={"white"}>
+					<Modal.Title>Modal title</Modal.Title>
+				</Modal.Header>
+				<Modal.Body className={"bg-dark text-white"}>
+					<ModifyReport report_id={report?.report_id} />
+				</Modal.Body>
+			</Modal>
 		</>
 	);
 };
