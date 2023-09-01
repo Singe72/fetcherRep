@@ -1,3 +1,7 @@
+/**
+ * USER
+ */
+
 export interface FilteredUser {
     user_id: string;
     user_username: string;
@@ -18,10 +22,19 @@ export interface UserLoginResponse {
     token: string;
 }
 
+/**
+ * REPORTS
+ */
+
 export interface ReportsFetchResponse {
     status: string;
     results: number;
     reports: IReport[];
+}
+
+export interface ReportFetchResponse {
+    status: string;
+    report: IReport;
 }
 
 export interface ReportUpdateRequest {
@@ -45,8 +58,30 @@ export interface ReportUpdateResponse {
     report?: IReport;
 }
 
+/**
+ * VULNERABILITIES
+ */
+
+export interface VulnerabilitiesFetchResponse {
+    status: string;
+    results: number;
+    vulnerabilities: IVulnerability[];
+}
+
+/**
+ * SYNC
+ */
+
 export interface SynchronisationResponse {
     is_synchronising: boolean;
+}
+
+/**
+ * STATISTICS
+ */
+
+export interface StatisticsResponse {
+    statistics: Statistics
 }
 
 export interface IReport {
@@ -80,4 +115,11 @@ export interface SelectProps {
         value: string;
         label: string;
     }[];
+}
+
+export interface Statistics {
+    nb_report: number,
+    nb_new_report: number,
+    nb_programs: number,
+    max_reward: number
 }

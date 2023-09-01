@@ -11,6 +11,13 @@ export async function GET(
         where: {
             report_id,
         },
+        include: {
+            report_vulnerabilities: {
+                include: {
+                    vulnerability: true
+                }
+            }
+        }
     });
 
     if (!report) {
@@ -26,9 +33,7 @@ export async function GET(
 
     let json_response = {
         status: "success",
-        data: {
-            report,
-        },
+        report: report,
     };
     return NextResponse.json(json_response);
 }

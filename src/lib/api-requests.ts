@@ -1,10 +1,10 @@
 import {
     FilteredUser,
-    IReport,
+    IReport, IVulnerability, ReportFetchResponse,
     ReportsFetchResponse,
-    ReportUpdateRequest, ReportUpdateResponse, SynchronisationResponse,
+    ReportUpdateRequest, ReportUpdateResponse, StatisticsResponse, SynchronisationResponse,
     UserLoginResponse,
-    UserResponse
+    UserResponse, VulnerabilitiesFetchResponse
 } from "./types";
 
 const SERVER_ENDPOINT = process.env.SERVER_ENDPOINT || "http://localhost:3000";
@@ -24,6 +24,10 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
     return data as T;
 }
+
+/**
+ * USER
+ */
 
 export async function apiRegisterUser(
     credentials: string
@@ -65,7 +69,6 @@ export async function apiLogoutUser(): Promise<void> {
     return handleResponse<void>(response);
 }
 
-
 export async function apiGetAuthUser(token?: string): Promise<FilteredUser> {
     const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -83,6 +86,10 @@ export async function apiGetAuthUser(token?: string): Promise<FilteredUser> {
     return handleResponse<UserResponse>(response).then((data) => data.data.user);
 }
 
+/**
+ * REPORTS
+ */
+
 export async function apiSyncReports(): Promise<void> {
     const response = await fetch(`${SERVER_ENDPOINT}/api/fetch`, {
         method: "GET",
@@ -95,8 +102,11 @@ export async function apiSyncReports(): Promise<void> {
     return handleResponse<void>(response);
 }
 
-export async function apiFetchReports(): Promise<IReport[]> {
-    const response = await fetch(`${SERVER_ENDPOINT}/api/reports`, {
+export async function apiFetchReports(
+    page: number,
+    limit: number
+): Promise<IReport[]> {
+    const response = await fetch(`${SERVER_ENDPOINT}/api/reports?page=${page}&limit=${limit}`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -105,6 +115,18 @@ export async function apiFetchReports(): Promise<IReport[]> {
     });
 
     return handleResponse<ReportsFetchResponse>(response).then((data) => data.reports);
+}
+
+export async function apiFetchReport(report_id: string): Promise<IReport> {
+    const response = await fetch(`${SERVER_ENDPOINT}/api/reports/${report_id}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        }
+    });
+
+    return handleResponse<ReportFetchResponse>(response).then((data) => data.report);
 }
 
 export async function apiUpdateReport(report: ReportUpdateRequest): Promise<ReportUpdateResponse> {
@@ -123,6 +145,26 @@ export async function apiUpdateReport(report: ReportUpdateRequest): Promise<Repo
     return handleResponse<ReportUpdateResponse>(response).then((data) => data);
 }
 
+/**
+ * VULNERABILITIES
+ */
+export async function apiFetchVulnerabilities(): Promise<IVulnerability[]> {
+    const response = await fetch(`${SERVER_ENDPOINT}/api/vulnerability`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        }
+    });
+
+    return handleResponse<VulnerabilitiesFetchResponse>(response).then((data) => data.vulnerabilities);
+}
+
+
+/**
+ * SYNCHRONISATION
+ */
+
 export async function apiIsSynchronising(): Promise<SynchronisationResponse> {
     const response = await fetch(
         `${SERVER_ENDPOINT}/api/synchronisation`,
@@ -136,4 +178,23 @@ export async function apiIsSynchronising(): Promise<SynchronisationResponse> {
     );
 
     return handleResponse<SynchronisationResponse>(response).then((data) => data);
+}
+
+/**
+ * STATISTICS
+ */
+
+export async function apiGetStatistics(): Promise<StatisticsResponse> {
+    const response = await fetch(
+        `${SERVER_ENDPOINT}/api/reports/statistics`,
+        {
+            method: 'GET',
+            credentials: "include",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+    );
+
+    return handleResponse<StatisticsResponse>(response).then((data) => data);
 }

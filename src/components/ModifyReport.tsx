@@ -6,8 +6,8 @@ import {
 } from "@/lib/validations/report.schema";
 import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {useEffect, useState} from "react";
-import {apiFetchReports, apiUpdateReport} from "@/lib/api-requests";
+import React, {useEffect, useState} from "react";
+import {apiFetchReport, apiFetchReports, apiFetchVulnerabilities, apiUpdateReport} from "@/lib/api-requests";
 import {useReportStore} from "@/store";
 import { handleApiError } from "@/lib/helpers";
 import {toast, Toaster} from "react-hot-toast";
@@ -19,10 +19,9 @@ import CheckboxInput from "@/components/CheckboxInput";
 import TextareaInput from "@/components/TextareaInput";
 import ReactSelectInput from "@/components/ReactSelectInput";
 
-const ModifyReport = ({report_id}: {report_id: string|undefined}) => {
+const ModifyReport = ({report_id, callback}: {report_id: string, callback: Function}) => {
 	const store = useReportStore();
 	const router = useRouter();
-	const reports = store.reports;
 	const report = store.report;
 	const [vulnerabilityOptions, setVulnerabilityOptions] = useState([] as {value: string, label: string}[]);
 	const [vulnerabilityValues, setVulnerabilityValues] = useState([] as {value: string, label: string}[]);
@@ -50,38 +49,43 @@ const ModifyReport = ({report_id}: {report_id: string|undefined}) => {
 		store.setPageLoading(true);
 
 		try {
-			const reports = await apiFetchReports();
+			const report = await apiFetchReport(report_id);
+			const vulnerabilities = await apiFetchVulnerabilities();
 
 			const actualVulnerabilityOptions: {value: string, label: string}[] = [];
-			reports.map((report) => {
-				report.report_vulnerabilities.map((report_vulnerability) => {
-					if(!actualVulnerabilityOptions.some(
-						(value) => value.value == report_vulnerability.vulnerability.vulnerability_id.toString()
-					)){
+			const actualVulnerabilityValues: {value: string, label: string}[] = [];
+
+			if(report.report_vulnerabilities == undefined){
+				vulnerabilities.map((vulnerability) => {
+					actualVulnerabilityOptions.push({
+						value: vulnerability.vulnerability_id.toString(),
+						label: vulnerability.vulnerability_name
+					});
+				});
+			} else {
+				vulnerabilities.map((vulnerability) => {
+					if (!report.report_vulnerabilities.some(
+						(value) => value.vulnerability.vulnerability_id == vulnerability.vulnerability_id
+					)) {
 						actualVulnerabilityOptions.push({
-							value: report_vulnerability.vulnerability.vulnerability_id.toString(),
-							label: report_vulnerability.vulnerability.vulnerability_name
+							value: vulnerability.vulnerability_id.toString(),
+							label: vulnerability.vulnerability_name
+						});
+					} else {
+						actualVulnerabilityValues.push({
+							value: vulnerability.vulnerability_id.toString(),
+							label: vulnerability.vulnerability_name
 						});
 					}
-				})
-			})
-			setVulnerabilityOptions(actualVulnerabilityOptions);
-
-			const report = reports.find((value) => report_id)!;
-
-			const actualVulnerabilityValues: {value: string, label: string}[] = [];
-			report?.report_vulnerabilities.map((report_vulnerability) => {
-				actualVulnerabilityValues.push({
-					value: report_vulnerability.vulnerability.vulnerability_id.toString(),
-					label: report_vulnerability.vulnerability.vulnerability_name
 				});
-			})
+			}
+
+			setVulnerabilityOptions(actualVulnerabilityOptions);
 			setVulnerabilityValues(actualVulnerabilityValues);
 
 			setTopReport(report.report_top_report);
 			setDisclosure(report.report_disclosure);
 
-			store.setReportList(reports);
 			store.setReport(report);
 		} catch (error: any) {
 			toast.error(error.toString());
@@ -98,8 +102,18 @@ const ModifyReport = ({report_id}: {report_id: string|undefined}) => {
 		};
 	}, []);
 
-	if(report_id == null){
-		return (<></>);
+	if(report == null){
+		return (
+			<>
+				<div className="card mb-4 mt-4">
+					<div className={"d-flex justify-content-center align-items-center w-100 h-100 p-4"}>
+						<div className="spinner-border" role="status">
+							<span className="visually-hidden">Loading...</span>
+						</div>
+					</div>
+				</div>
+			</>
+		)
 	}
 
 	const onSubmit: SubmitHandler<ModifyReportInput> = async (data) => {
@@ -117,13 +131,11 @@ const ModifyReport = ({report_id}: {report_id: string|undefined}) => {
 		try {
 			await apiUpdateReport(report);
 
-			toast.success("Report has been udpated successfully! You will be redirected in a few seconds...");
-
 			await new Promise((resolve) => {
 				setTimeout(resolve, 3000);
 			});
 
-			return router.push("/");
+			callback();
 		} catch (error: any) {
 			if (error instanceof Error) {
 				handleApiError(error);
