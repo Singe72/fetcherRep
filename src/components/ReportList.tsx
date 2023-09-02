@@ -15,8 +15,9 @@ import statistics from "@/components/Statistics";
 const FeedbackList: React.FC = () => {
 	const [show, setShow] = useState(false);
 	const [report, setReport] = useState(null as IReport|null);
+	const [maxPage, setMaxPage] = useState(1);
 	const [page, setPage] = useState(1);
-	const [limit, setLimit] = useState(20);
+	const [limit, setLimit] = useState(50);
 
 	const handleClose = () => {
 		setShow(false);
@@ -42,6 +43,11 @@ const FeedbackList: React.FC = () => {
 		}
 	}
 
+	const changeLimit = (value: string) => {
+		setLimit(Number(value));
+		fetchReports();
+	}
+
 	const store = useReportStore();
 	const reportList = store.reports;
 
@@ -63,7 +69,12 @@ const FeedbackList: React.FC = () => {
 		store.setPageLoading(true);
 
 		try {
-			const reports = await apiFetchReports(page, limit);
+			const reportsData = await apiFetchReports(page, limit);
+			const reports = reportsData.reports;
+
+			console.log(reportsData.results, limit);
+
+			setMaxPage(Math.floor(reportsData.results / limit));
 
 			store.setReportList(
 				reports.sort(
@@ -115,7 +126,12 @@ const FeedbackList: React.FC = () => {
 				</div>
 				<div className={"container-fluid d-flex gap-2 mt-2 mb-2"}>
 					<div className={"form-floating"}>
-						<input id="limit" type={"number"} className={"form-control bg-dark text-white"} defaultValue={limit} />
+						<input
+							id="limit"
+							type={"number"}
+							className={"form-control bg-dark text-white"}
+							defaultValue={limit}
+							onChange={(event) => changeLimit(event.target.value)}/>
 						<label htmlFor={"limit"}>Limit</label>
 					</div>
 				</div>
@@ -174,17 +190,29 @@ const FeedbackList: React.FC = () => {
 							))}
 						</tbody>
 					</table>
-					<div className={"container-fluid d-flex justify-content-end gap-2 mt-2 mb-2"}>
-						<button type={"button"} className={"btn btn-primary btn-sm"} onClick={previousPage}>
-							<span className="material-symbols-outlined">
-								chevron_left
-							</span>
-						</button>
-						<button type={"button"} className={"btn btn-primary btn-sm"} onClick={nextPage}>
-							<span className="material-symbols-outlined">
-								chevron_right
-							</span>
-						</button>
+					<div className={"container-fluid d-flex justify-content-between gap-2 mt-2 mb-2"}>
+						<span>Page {page}/{maxPage}</span>
+						<div>
+							<button
+								type={"button"}
+								className={"btn btn-primary btn-sm"}
+								onClick={previousPage}
+								disabled={(page == 1)}>
+								<span className="material-symbols-outlined">
+									chevron_left
+								</span>
+							</button>
+							<button
+								type={"button"}
+								className={"btn btn-primary btn-sm ms-2"}
+								onClick={nextPage}
+								disabled={(page == maxPage)}
+							>
+								<span className="material-symbols-outlined">
+									chevron_right
+								</span>
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>

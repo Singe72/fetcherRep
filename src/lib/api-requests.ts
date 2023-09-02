@@ -105,7 +105,7 @@ export async function apiSyncReports(): Promise<void> {
 export async function apiFetchReports(
     page: number,
     limit: number
-): Promise<IReport[]> {
+): Promise<{reports: IReport[], results: number}> {
     const response = await fetch(`${SERVER_ENDPOINT}/api/reports?page=${page}&limit=${limit}`, {
         method: "GET",
         credentials: "include",
@@ -114,7 +114,9 @@ export async function apiFetchReports(
         }
     });
 
-    return handleResponse<ReportsFetchResponse>(response).then((data) => data.reports);
+    return handleResponse<ReportsFetchResponse>(response).then((data) => {
+        return {reports: data.reports, results: data.results}
+    });
 }
 
 export async function apiFetchReport(report_id: string): Promise<IReport> {

@@ -11,12 +11,23 @@ export async function GET(request: NextRequest) {
 
     const reports = await prisma.report.findMany({
         take: limit,
-        skip: skip
+        skip: skip,
+        orderBy: [
+            {
+                report_state: "desc"
+            }
+        ]
+    });
+
+    const count = await prisma.report.aggregate({
+        _count: {
+            report_id: true
+        }
     });
 
     let json_response = {
         status: "success",
-        results: reports.length,
+        results: count._count.report_id,
         reports,
     };
 

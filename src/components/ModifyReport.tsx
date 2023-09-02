@@ -7,7 +7,7 @@ import {
 import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, {useEffect, useState} from "react";
-import {apiFetchReport, apiFetchReports, apiFetchVulnerabilities, apiUpdateReport} from "@/lib/api-requests";
+import {apiFetchReport, apiFetchVulnerabilities, apiUpdateReport} from "@/lib/api-requests";
 import {useReportStore} from "@/store";
 import { handleApiError } from "@/lib/helpers";
 import {toast, Toaster} from "react-hot-toast";
