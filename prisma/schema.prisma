@@ -28,7 +28,7 @@ model Report {
   report_severity        String?
   report_reward          Float?
   report_disclosure      Boolean                @default(false)
-  report_weakness        String                 @default("")
+  report_weakness        String?
   report_top_report      Boolean                @default(false)
   report_comment         String                 @default("")
   report_vulnerabilities Report_Vulnerability[]

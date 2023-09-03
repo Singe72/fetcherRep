@@ -102,7 +102,7 @@ const FeedbackList: React.FC = () => {
 		};
 	}, [page, limit]);
 
-	if(reportList.length == 0){
+	if(reportList == null){
 		return (
 			<>
 				<div className="card mb-4 mt-4">
@@ -110,6 +110,21 @@ const FeedbackList: React.FC = () => {
 						<div className="spinner-border" role="status">
 							<span className="visually-hidden">Loading...</span>
 						</div>
+					</div>
+				</div>
+			</>
+		)
+	} else if(reportList.length == 0){
+		return (
+			<>
+				<Toaster />
+				<div className="card mb-4 mt-4">
+					<div className="card-header justify-content-between align-items-center d-flex">
+						<h6 className="card-title m-0">Reports</h6>
+						<Synchronisation />
+					</div>
+					<div className={"container-fluid mt-2 mb-2"}>
+						<p className={"text-center"}>Pas de rapports enregistrés.. Commencer par effectuer une synchronisation</p>
 					</div>
 				</div>
 			</>

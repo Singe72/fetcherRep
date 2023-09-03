@@ -14,7 +14,7 @@ type Store = {
 
 type ReportStore = {
     pageLoading: boolean;
-    reports: IReport[];
+    reports: null | IReport[];
     report: IReport | null;
     setPageLoading: (loading: boolean) => void;
     modifyReport: (report: IReport) => void;
@@ -38,11 +38,11 @@ export const useStore = create<Store>((set) => ({
 
 export const useReportStore = create<ReportStore>((set) => ({
     pageLoading: false,
-    reports: [],
+    reports: null,
     report: null,
     setPageLoading: (loading: boolean) => set((state) => ({...state, pageLoading: loading})),
     modifyReport : (report: IReport) => set((state) =>
-        ({...state, reports: [report, ...state.reports.filter((data) => data.report_id != data.report_id)]})),
+        ({...state, reports: [report, ...state.reports!.filter((data) => data.report_id != data.report_id)]})),
     setReportList: (reports: IReport[]) => set((state) => ({ ...state, reports: reports})),
     setReport: (report: IReport) => set((state) => ({...state, report: report}))
 }));
