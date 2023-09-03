@@ -24,11 +24,15 @@ export async function middleware(req: NextRequest) {
 
     if (
         !token &&
-        (req.nextUrl.pathname.startsWith("/api/fetch") ||
-            req.nextUrl.pathname.startsWith("/api/users") ||
-            req.nextUrl.pathname.startsWith("/api/auth/logout") ||
+        (
+            req.nextUrl.pathname.startsWith("/api/fetch") ||
+            req.nextUrl.pathname.startsWith("/api/notification") ||
             req.nextUrl.pathname.startsWith("/api/reports") ||
-            req.nextUrl.pathname.startsWith("/api/vulnerability"))
+            req.nextUrl.pathname.startsWith("/api/synchronisation") ||
+            req.nextUrl.pathname.startsWith("/api/users") ||
+            req.nextUrl.pathname.startsWith("/api/vulnerability") ||
+            req.nextUrl.pathname.startsWith("/api/auth/logout")
+        )
     ) {
         return getErrorResponse(
             401,
@@ -77,5 +81,16 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-    matcher: ["/", "/report", "/user/login", "/api/users/:path*", "/api/auth/logout", "/api/reports/:path*", "/api/vulnerability/:path*"],
+    matcher: [
+        "/",
+        "/report",
+        "/api/fetch/:path*",
+        "/api/notification/:path*",
+        "/api/reports/:path*",
+        "/api/synchronisation/:path*",
+        "/api/users/:path*",
+        "/api/vulnerability/:path*",
+        "/api/auth/logout",
+        "/api/vulnerability/:path*"
+    ],
 };

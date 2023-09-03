@@ -1,7 +1,8 @@
 "use client";
 
-import { FilteredUser, IReport } from "@/lib/types";
+import {FilteredUser, INotification, IReport} from "@/lib/types";
 import { create } from "zustand";
+import notifications from "@/components/notification/Notifications";
 
 type Store = {
     authUser: FilteredUser | null;
@@ -19,6 +20,11 @@ type ReportStore = {
     modifyReport: (report: IReport) => void;
     setReportList: (reports: IReport[]) => void;
     setReport: (report: IReport) => void;
+}
+
+type NotificationStore = {
+    notifications: null|INotification[];
+    setNotificationList: (notifications: INotification[]) => void;
 }
 
 export const useStore = create<Store>((set) => ({
@@ -40,3 +46,8 @@ export const useReportStore = create<ReportStore>((set) => ({
     setReportList: (reports: IReport[]) => set((state) => ({ ...state, reports: reports})),
     setReport: (report: IReport) => set((state) => ({...state, report: report}))
 }));
+
+export const useNotificationStore = create<NotificationStore>((set) => ({
+    notifications: null,
+    setNotificationList: (notifications: INotification[]) => set((state) => ({ ...state, notifications: notifications})),
+}))

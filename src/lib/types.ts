@@ -69,6 +69,16 @@ export interface VulnerabilitiesFetchResponse {
 }
 
 /**
+ * NOTIFICATION
+ */
+
+export interface NotificationFetchResponse {
+    status: string;
+    results: number;
+    notifications: INotification[];
+}
+
+/**
  * SYNC
  */
 
@@ -108,6 +118,13 @@ export interface IReport_Vulnerability {
 export interface IVulnerability {
     vulnerability_id: number;
     vulnerability_name: string;
+}
+
+export interface INotification {
+    notification_id: number;
+    notification_name: string;
+    notification_message: string;
+    notification_date: string;
 }
 
 export interface SelectProps {

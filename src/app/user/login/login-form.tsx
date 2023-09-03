@@ -5,7 +5,7 @@ import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import {apiGetAuthUser, apiLoginUser} from "@/lib/api-requests";
-import FormInput from "@/components/FormInput";
+import FormInput from "@/components/inputs/FormInput";
 import Link from "next/link";
 import { useStore } from "@/store";
 import { handleApiError } from "@/lib/helpers";

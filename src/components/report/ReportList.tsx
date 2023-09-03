@@ -5,7 +5,7 @@ import { apiFetchReports } from "@/lib/api-requests";
 import { useReportStore } from "@/store";
 import toast, {Toaster} from "react-hot-toast";
 import Link from "next/link";
-import ModifyReport from "@/components/ModifyReport";
+import ModifyReport from "@/components/report/ModifyReport";
 import Modal from 'react-bootstrap/Modal';
 import ModalDialog from 'react-bootstrap/ModalDialog'
 import {IReport} from "@/lib/types";

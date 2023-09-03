@@ -1,6 +1,6 @@
 import {
-    FilteredUser,
-    IReport, IVulnerability, ReportFetchResponse,
+    FilteredUser, INotification,
+    IReport, IVulnerability, NotificationFetchResponse, ReportFetchResponse,
     ReportsFetchResponse,
     ReportUpdateRequest, ReportUpdateResponse, StatisticsResponse, SynchronisationResponse,
     UserLoginResponse,
@@ -162,6 +162,35 @@ export async function apiFetchVulnerabilities(): Promise<IVulnerability[]> {
     return handleResponse<VulnerabilitiesFetchResponse>(response).then((data) => data.vulnerabilities);
 }
 
+/**
+ * NOTIFICATION
+ */
+export async function apiFetchNotifications(): Promise<{notifications: INotification[], nbNotifications: number}> {
+    const response = await fetch(`${SERVER_ENDPOINT}/api/notification`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        }
+    });
+
+    return handleResponse<NotificationFetchResponse>(response).then((data) => {
+        return {
+            notifications: data.notifications,
+            nbNotifications: data.results
+        }
+    });
+}
+
+export async function apiReadNotification(notification_id: number): Promise<void> {
+    await fetch(`${SERVER_ENDPOINT}/api/notification/${notification_id}`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        }
+    });
+}
 
 /**
  * SYNCHRONISATION

@@ -1,9 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import ReportList from "@/components/ReportList";
+import ReportList from "@/components/report/ReportList";
 
 import Script from "next/script";
 import React from "react";
 import Statistics from "@/components/Statistics";
+import Notifications from "@/components/notification/Notifications";
 
 export default async function Home() {
   return (
@@ -38,7 +39,7 @@ export default async function Home() {
               <button type="button" className="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div className="offcanvas-body">
-              <a href="#" className="btn btn-outline-secondary w-100 mt-4" role="button">View all notifications</a>
+              <Notifications />
             </div>
           </div>
         </section>

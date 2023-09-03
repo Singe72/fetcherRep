@@ -6,6 +6,7 @@ import { Inter } from 'next/font/google'
 import '@/css/libs.bundle.css';
 import '@/css/theme.bundle.css';
 import Sidebar from "@/components/Sidebar";
+import NbNotifications from "@/components/notification/NbNotifications";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -57,7 +58,7 @@ export default function RootLayout({
                   <a className="btn-icon btn-hover-dark position-relative p-2 disable-child-pointer" data-bs-toggle="offcanvas" href="#offcanvasNotifications" role="button"
                      aria-controls="offcanvasNotifications">
                     <i className="ri-notification-fill align-bottom text-body lh-1"></i>
-                    {/* <span className="badge bg-primary text-white position-absolute top-0 end-0">3</span> */}
+                    <NbNotifications />
                   </a>
                 </div>
               </div>

@@ -15,9 +15,9 @@ import { useRouter } from "next/navigation";
 import Script from "next/script";
 import {IReport, ReportUpdateRequest} from "@/lib/types";
 
-import CheckboxInput from "@/components/CheckboxInput";
-import TextareaInput from "@/components/TextareaInput";
-import ReactSelectInput from "@/components/ReactSelectInput";
+import CheckboxInput from "@/components/inputs/CheckboxInput";
+import TextareaInput from "@/components/inputs/TextareaInput";
+import ReactSelectInput from "@/components/inputs/ReactSelectInput";
 
 const ModifyReport = ({report_id, callback}: {report_id: string, callback: Function}) => {
 	const store = useReportStore();
