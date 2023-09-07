@@ -17,7 +17,7 @@ import {IReport, ReportUpdateRequest} from "@/lib/types";
 
 import CheckboxInput from "@/components/inputs/CheckboxInput";
 import TextareaInput from "@/components/inputs/TextareaInput";
-import ReactSelectInput from "@/components/inputs/ReactSelectInput";
+import ReactCreatableSelectInput from "@/components/inputs/ReactCreatableSelectInput";
 
 const ModifyReport = ({report_id, callback}: {report_id: string, callback: Function}) => {
 	const store = useReportStore();
@@ -173,9 +173,10 @@ const ModifyReport = ({report_id, callback}: {report_id: string, callback: Funct
 								</div>
 								<TextareaInput label={"Weakness"} name={"weakness"} value={report?.report_weakness} />
 								<TextareaInput label={"Comment"} name={"comment"} value={report?.report_comment}  />
-								<ReactSelectInput
+								<ReactCreatableSelectInput
 									label={"Vulnerabilities"}
 									name={"vulnerabilities"}
+									multi={true}
 									options={vulnerabilityOptions}
 									values={vulnerabilityValues}
 									setValues={setVulnerabilityValues} />

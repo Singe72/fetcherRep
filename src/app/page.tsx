@@ -12,10 +12,10 @@ export default async function Home() {
         <section className="container-fluid">
           <nav className="mb-4 pb-2 border-bottom" aria-label="breadcrumb">
             <ol className="breadcrumb">
-              <li className="breadcrumb-item">
+              <li key="dashboard" className="breadcrumb-item">
                 <a href="#"><i className="ri-home-line align-bottom me-1"></i> Dashboard</a>
               </li>
-              <li className="breadcrumb-item active" aria-current="page">Home</li>
+              <li key="home" className="breadcrumb-item active" aria-current="page">Home</li>
             </ol>
           </nav>
 

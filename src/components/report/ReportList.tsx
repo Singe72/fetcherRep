@@ -11,18 +11,67 @@ import ModalDialog from 'react-bootstrap/ModalDialog'
 import {IReport} from "@/lib/types";
 import Synchronisation from "@/components/Synchronisation";
 import statistics from "@/components/Statistics";
+import ReactCreatableSelectInput from "@/components/inputs/ReactCreatableSelectInput";
+import ReactSelectInput from "@/components/inputs/ReactSelectInput";
+import {FormProvider, useForm} from "react-hook-form";
+import {ModifyReportInput, ModifyReportSchema} from "@/lib/validations/report.schema";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {FilterInput, FilterSchema} from "@/lib/validations/filter.schema";
+import FormInput from "@/components/inputs/FormInput";
 
-const FeedbackList: React.FC = () => {
+const ReportList: React.FC = () => {
 	const [show, setShow] = useState(false);
 	const [report, setReport] = useState(null as IReport|null);
 	const [maxPage, setMaxPage] = useState(1);
 	const [page, setPage] = useState(1);
 	const [limit, setLimit] = useState(50);
+	const [name, setName] = useState("");
+	const [stateValues, setStateValues] = useState([{
+		value: "new",
+		label: "New"
+	}] as {value: string, label: string}[]);
+	const [severityValues, setSeverityValues] = useState([
+		{
+			value: "medium",
+			label: "medium"
+		},
+		{
+			value: "high",
+			label: "high"
+		},
+		{
+			value: "low",
+			label: "low"
+		},
+		{
+			value: "critical",
+			label: "critical"
+		},
+		{
+			value: "none",
+			label: "none"
+		},
+	] as {value: string, label: string}[]);
+	const methods = useForm();
+
+	const stateOptions = [
+		{
+			value: "new",
+			label: "New"
+		},
+		{
+			value: "processed",
+			label: "Processed"
+		}
+	];
+
+	const severityOptions = severityValues;
 
 	const handleClose = () => {
 		setShow(false);
 		setReport(null);
 	}
+
 	const handleShow = (report: IReport) => {
 		setShow(true);
 		setReport(report);
@@ -37,15 +86,29 @@ const FeedbackList: React.FC = () => {
 	const nextPage = () => {
 		setPage(page + 1);
 	}
+
 	const previousPage = () => {
 		if(page > 1) {
 			setPage(page - 1);
 		}
 	}
 
-	const changeLimit = (value: string) => {
-		setLimit(Number(value));
-		fetchReports();
+	const changeLimit = (event: any) => {
+		let limit = Number(event.target.value);
+		if(limit < 1) limit = 1;
+		if(limit > 200) limit = 200;
+
+		setLimit(limit);
+
+		event.target.value = limit;
+	}
+
+	const changeName = (event: any) => {
+		let name = event.target.value;
+
+		setName(event.target.value);
+
+		event.target.value = name;
 	}
 
 	const store = useReportStore();
@@ -69,12 +132,18 @@ const FeedbackList: React.FC = () => {
 		store.setPageLoading(true);
 
 		try {
-			const reportsData = await apiFetchReports(page, limit);
+			const reportsData = await apiFetchReports(
+				page,
+				limit,
+				name,
+				stateValues.map((state) => state.value),
+				severityValues.map((severity) => severity.value)
+			);
 			const reports = reportsData.reports;
 
 			console.log(reportsData.results, limit);
 
-			setMaxPage(Math.floor(reportsData.results / limit));
+			setMaxPage(Math.ceil(reportsData.results / limit));
 
 			store.setReportList(
 				reports.sort(
@@ -100,7 +169,7 @@ const FeedbackList: React.FC = () => {
 		return () => {
 			window.removeEventListener("focus", fetchReports);
 		};
-	}, [page, limit]);
+	}, [page, limit, name, stateValues, severityValues]);
 
 	if(reportList == null){
 		return (
@@ -123,6 +192,46 @@ const FeedbackList: React.FC = () => {
 						<h6 className="card-title m-0">Reports</h6>
 						<Synchronisation />
 					</div>
+					<div className={"container-fluid d-flex gap-2 mt-2 mb-2"}>
+						<FormProvider {...methods}>
+							<div className={"form-group"}>
+								<label htmlFor={"limit"} className={"text-white"}>Limit</label>
+								<input
+									id="limit"
+									type={"number"}
+									className={"form-control bg-dark text-white"}
+									defaultValue={limit}
+									onBlur={(event) => changeLimit(event)}
+								/>
+							</div>
+							<ReactSelectInput
+								label={"State"}
+								name={"state"}
+								multi={true}
+								options={stateOptions}
+								values={stateValues}
+								setValues={setStateValues}
+							/>
+							<ReactSelectInput
+								label={"Severity"}
+								name={"severity"}
+								multi={true}
+								options={severityOptions}
+								values={severityValues}
+								setValues={setSeverityValues}
+							/>
+							<div className={"form-group"}>
+								<label htmlFor={"limit"} className={"text-white"}>Name</label>
+								<input
+									id="name"
+									type={"text"}
+									className={"form-control bg-dark text-white"}
+									defaultValue={name}
+									onBlur={(event) => changeName(event)}
+								/>
+							</div>
+						</FormProvider>
+					</div>
 					<div className={"container-fluid mt-2 mb-2"}>
 						<p className={"text-center"}>Pas de rapports enregistrés.. Commencer par effectuer une synchronisation</p>
 					</div>
@@ -140,15 +249,44 @@ const FeedbackList: React.FC = () => {
 					<Synchronisation />
 				</div>
 				<div className={"container-fluid d-flex gap-2 mt-2 mb-2"}>
-					<div className={"form-floating"}>
-						<input
-							id="limit"
-							type={"number"}
-							className={"form-control bg-dark text-white"}
-							defaultValue={limit}
-							onChange={(event) => changeLimit(event.target.value)}/>
-						<label htmlFor={"limit"}>Limit</label>
-					</div>
+					<FormProvider {...methods}>
+						<div className={"form-group"}>
+							<label htmlFor={"limit"} className={"text-white"}>Limit</label>
+							<input
+								id="limit"
+								type={"number"}
+								className={"form-control bg-dark text-white"}
+								defaultValue={limit}
+								onBlur={(event) => changeLimit(event)}
+							/>
+						</div>
+						<ReactSelectInput
+							label={"State"}
+							name={"state"}
+							multi={true}
+							options={stateOptions}
+							values={stateValues}
+							setValues={setStateValues}
+						/>
+						<ReactSelectInput
+							label={"Severity"}
+							name={"severity"}
+							multi={true}
+							options={severityOptions}
+							values={severityValues}
+							setValues={setSeverityValues}
+						/>
+						<div className={"form-group"}>
+							<label htmlFor={"limit"} className={"text-white"}>Name</label>
+							<input
+								id="name"
+								type={"text"}
+								className={"form-control bg-dark text-white"}
+								defaultValue={name}
+								onBlur={(event) => changeName(event)}
+							/>
+						</div>
+					</FormProvider>
 				</div>
 				<div className="card-body">
 					<table className="table">
@@ -249,4 +387,4 @@ const FeedbackList: React.FC = () => {
 	);
 };
 
-export default FeedbackList;
+export default ReportList;

@@ -104,9 +104,12 @@ export async function apiSyncReports(): Promise<void> {
 
 export async function apiFetchReports(
     page: number,
-    limit: number
-): Promise<{reports: IReport[], results: number}> {
-    const response = await fetch(`${SERVER_ENDPOINT}/api/reports?page=${page}&limit=${limit}`, {
+    limit: number,
+    name: string,
+    stateValues: string[],
+    severityValues: string[]
+): Promise<{ reports: IReport[]; results: number }> {
+    const response = await fetch(`${SERVER_ENDPOINT}/api/reports?page=${page}&limit=${limit}&name=${name}&stateValues=${JSON.stringify(stateValues)}&severityValues=${JSON.stringify(severityValues)}`, {
         method: "GET",
         credentials: "include",
         headers: {

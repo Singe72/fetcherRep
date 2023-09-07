@@ -69,7 +69,7 @@ model User_Notification {
 }
 
 model Synchronisation {
-  synchrosation_id     Int      @id @default(autoincrement())
+  synchronisation_id   Int      @id @default(autoincrement())
   is_synchronising     Boolean  @default(false)
   last_synchronisation DateTime @updatedAt
 }

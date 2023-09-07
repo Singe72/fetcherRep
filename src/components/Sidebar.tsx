@@ -76,8 +76,8 @@ const Sidebar = () => {
                             </div>
 
                             <ul className="list-unstyled mb-6 aside-menu">
-                                <li className="menu-section">Menu</li>
-                                <li className="menu-item">
+                                <li key="menu" className="menu-section">Menu</li>
+                                <li key="dashboard" className="menu-item">
                                     <Link
                                         href={"/"}
                                         className={"d-flex align-items-center menu-link"}>
