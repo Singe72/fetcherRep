@@ -1,0 +1,15 @@
+version: '3.8'
+
+name: 'fetcher-rep'
+
+services:
+  app:
+    image: node:20
+    working_dir: /app
+    volumes:
+      - type: bind
+        source: ./app/
+        target: /app/
+    ports:
+      - 127.0.0.1:3000:3000/tcp
+    command: "bash -c 'npm install && npm run dev'"
