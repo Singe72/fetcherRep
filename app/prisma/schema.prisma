@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id            Int                 @id @default(autoincrement())
+  user_email         String              @unique
+  user_username      String
+  user_password      String
+  user_createdAt     DateTime?           @default(now())
+  user_updatedAt     DateTime?           @updatedAt
+  user_notifications User_Notification[]
+}
+
+model Report {
+  report_id              String                 @id
+  report_title           String
+  report_h1_id           Int?
+  report_program         String?
+  report_severity        String?
+  report_reward          Float?
+  report_disclosure      Boolean                @default(false)
+  report_weakness        String?
+  report_top_report      Boolean                @default(false)
+  report_comment         String                 @default("")
+  report_vulnerabilities Report_Vulnerability[]
+  report_state           String                 @default("new")
+}
+
+model Vulnerability {
+  vulnerability_id      Int                    @id @default(autoincrement())
+  vulnerability_name    String
+  vulnerability_reports Report_Vulnerability[]
+}
+
+model Report_Vulnerability {
+  report                                Report        @relation(fields: [report_vulnerability_report_id], references: [report_id])
+  report_vulnerability_report_id        String
+  vulnerability                         Vulnerability @relation(fields: [report_vulnerability_vulnerability_id], references: [vulnerability_id])
+  report_vulnerability_vulnerability_id Int
+
+  @@id([report_vulnerability_report_id, report_vulnerability_vulnerability_id])
+}
+
+model Notification {
+  notification_id      Int                 @id @default(autoincrement())
+  notification_name    String
+  notification_message String
+  notification_date    DateTime            @default(now())
+  notification_users   User_Notification[]
+}
+
+model User_Notification {
+  user                              User         @relation(fields: [user_notification_user_id], references: [user_id])
+  user_notification_user_id         Int
+  notification                      Notification @relation(fields: [user_notification_notification_id], references: [notification_id])
+  user_notification_notification_id Int
+  user_notification_read            Boolean      @default(false)
+
+  @@id([user_notification_user_id, user_notification_notification_id])
+}
+
+model Synchronisation {
+  synchronisation_id   Int      @id @default(autoincrement())
+  is_synchronising     Boolean  @default(false)
+  last_synchronisation DateTime @updatedAt
+}
