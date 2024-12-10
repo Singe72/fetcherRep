@@ -2,7 +2,7 @@
 
 ![](fetcherREP.png)
 
-This application is designed to retrieve, store and annotate reports from the "Hackerone" platform. FetcherREP was developed by a student. If you have any tips or suggestions, don't hesitate to contact us!
+This application is designed to retrieve, store and annotate reports from the "Hackerone" platform. FetcherREP was developed by a noob. If you have any tips or suggestions, don't hesitate to contact us!
 
 ## Installation
 
